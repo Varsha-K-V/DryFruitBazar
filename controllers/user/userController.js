@@ -15,7 +15,7 @@ const pageNotFound = async (req, res) => {
 const loadHomepage = async (req, res) => {
   try {
     const user = req.session.user;
-    console.log(user);
+    //console.log(user);
     if(user){
 
       const userData = await User.findOne({_id:user._id});
@@ -33,7 +33,9 @@ const loadHomepage = async (req, res) => {
 
 const loadSignUp = async (req, res) => {
   try {
-    return res.render("signup");
+    return res.render("signup", {
+      Message: ''
+    });
   } catch (error) {
     console.log("Sign up page is not loading", error);
     res.status(500).send("Server Error");
@@ -85,10 +87,10 @@ const signup = async (req,res)=>{
             return res.render("signup",{Message:"Password do not match"});
             
         }
-
+        
         const findUser = await User.findOne({email})
-        if(findUser){
-            console.log('email exist')
+        if(findUser)
+          {
             return res.render("signup",{Message:"User with this email already exists"});
         }
         
@@ -167,7 +169,7 @@ const otpPage = async (req,res)=>{
 const resendOTP = async (req,res)=>{
   
   try {
-      console.log("resend")
+      
     const {email}=req.session.userData;
     if(!email){
       return res.status(400).json({success:false,Message:"Email not found in session"})
@@ -243,10 +245,12 @@ const logout = async (req,res)=>{
         console.log("Session destruction error",err.message);
         return res.redirect("/pageNotFound");
       }
+      return res.redirect("/login")
     })
 
   } catch (error) {
-    
+    console.log("Logout error",error);
+    res.redirect("/pageNotFound")
   }
 }
 
